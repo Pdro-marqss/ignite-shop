@@ -1,17 +1,13 @@
 import Image from "next/image";
+import { GetStaticProps } from "next";
 
 import { useKeenSlider } from 'keen-slider/react';
 import { stripe } from "../lib/stripe";
 import Stripe from "stripe";
 
-import shirt1 from '../assets/Shirt/1.png';
-import shirt2 from '../assets/Shirt/2.png';
-import shirt3 from '../assets/Shirt/3.png';
-
 import { HomeContainer, Product } from "../styles/pagesStyles/home";
 import 'keen-slider/keen-slider.min.css';
 
-import { GetServerSideProps } from "next";
 
 interface HomeProps {
   products: {
@@ -48,7 +44,7 @@ export default function Home({ products }: HomeProps) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const response = await stripe.products.list({
     expand: ['data.default_price']
   });
@@ -67,6 +63,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
       products,
-    }
+    },
+    revalidate: 60 * 60 * 2, //A cada 2 horas a pagina estatica é recriada
   }
 }
